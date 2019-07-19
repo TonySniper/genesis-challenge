@@ -18,14 +18,17 @@ namespace Antonio.TechTest.Application.Services
 
         public void CreateOrder(Order order)
         {
-            if (!IsAbleToOrder(order.ClientId))
-                throw new Exception($"Could not create the order because Client with id {order.ClientId} has outstanding orders with a total value in excess of onde hundred Euro");
+            if (!IsClientAbleToPlaceOrders(order.ClientId))
+                throw new Exception($"Order was rejected because Client with id {order.ClientId} has outstanding orders with a total value in excess of onde hundred Euro");
+
+            if (order.Quantity > 10)
+                throw new Exception($"Order was rejected because it contains more than 10 units of product { order.ProductId }");
 
             _context.Add(order);
             _context.SaveChanges();
         }
 
-        private bool IsAbleToOrder(int clientId)
+        private bool IsClientAbleToPlaceOrders(int clientId)
         {
             var totalValue = _context.Orders.Where(x => x.ClientId == clientId).Sum(x => x.Quantity * x.UnitPrice);
             return totalValue <= 1000;

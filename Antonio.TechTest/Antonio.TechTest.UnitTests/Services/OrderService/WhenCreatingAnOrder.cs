@@ -65,6 +65,23 @@ namespace Antonio.TechTest.UnitTests.Services
             Assert.AreEqual(expectedErrorMessage, exception.Message);            
         }
 
+        [TestMethod]
+        public void GivenAnOrderContainMoreThan10OfAProductItShouldBeRejected()
+        {
+            var newOrder = new StandardOrder();
+
+            var order = new OrderBuilder()
+                .With(newOrder)
+                .WithQuantity(11)
+                .Build();
+
+            string expectedErrorMessage = $"Order was rejected because it contains more than 10 units of product { order.ProductId }";
+
+
+            var exception = Assert.ThrowsException<Exception>(() => { _orderService.CreateOrder(order); });
+            Assert.AreEqual(expectedErrorMessage, exception.Message);
+        }
+
         [TestCleanup]
         public void CleanUp()
         {
