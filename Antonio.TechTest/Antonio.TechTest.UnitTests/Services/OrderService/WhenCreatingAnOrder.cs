@@ -16,16 +16,12 @@ using System.Threading.Tasks;
 namespace Antonio.TechTest.UnitTests.Services
 {
     [TestClass]
-    public class WhenCreatingAnOrder
+    public class WhenCreatingAnOrder : UnitTestBase
     {
         private IOrderService _orderService;
-        private TechTestContext _context;
 
         public WhenCreatingAnOrder()
         {
-            var randomDatabaseName = Guid.NewGuid().ToString();
-            var dbOptions = new DbContextOptionsBuilder<TechTestContext>().UseInMemoryDatabase(randomDatabaseName).Options;
-            _context = new TechTestContext(dbOptions);
             _orderService = new OrderService(_context);
         }
 
@@ -49,6 +45,54 @@ namespace Antonio.TechTest.UnitTests.Services
             Assert.AreEqual(order.UnitPrice, orderOnDatabase.UnitPrice);
             Assert.AreEqual(order.ClientId, orderOnDatabase.ClientId);
             Assert.AreEqual(order.DeliveryAddress, orderOnDatabase.DeliveryAddress);
+        }
+
+        [TestMethod]
+        public void GivenAClientWithOutstandingOrdersExceeding1000EuroItShouldBeRejected()
+        {
+            var newOrder = new StandardOrder();
+
+            var order = new OrderBuilder()
+                .With(newOrder)
+                .IgnoreId()
+                .Build();
+
+            string expectedErrorMessage = $"Could not create the order because Client with id {order.ClientId} has outstanding orders with a total value in excess of onde hundred Euro";
+
+            this.AssumeExpensiveOrdersCreatedOnDatabaseForClient(order.ClientId, 200, 2);
+
+            var exception = Assert.ThrowsException<Exception>(() => { _orderService.CreateOrder(order); });
+            Assert.AreEqual(expectedErrorMessage, exception.Message);            
+        }
+
+        [TestCleanup]
+        public void CleanUp()
+        {
+            foreach (var item in _context.Orders)
+            {
+                _context.Remove(item);
+                _context.SaveChanges();
+            }
+        }
+
+        private void AssumeExpensiveOrdersCreatedOnDatabaseForClient(int clientId, decimal unitPrice, int quantity)
+        {
+            var newExpensiveOrder = new StandardOrder();
+
+            for (int i = 0; i < 5; i++)
+            {
+                var order = new OrderBuilder()
+                    .With(newExpensiveOrder)
+                    .WithClientId(clientId)
+                    .WithQuantity(quantity)
+                    .WithUnitPrice(unitPrice)
+                    .IgnoreId()
+                    .Build();
+
+                _context.Orders.Add(order);
+            }
+
+            _context.SaveChanges();
         }
     }
 }

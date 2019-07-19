@@ -10,6 +10,13 @@ namespace Antonio.TechTest.UnitTests.Builders
     {
         private WellKnownOrder _wellKnownOrder;
         private bool _ignoreId;
+        private bool _withClientId;
+        private bool _withUnitPrice;
+        private bool _withProductQuantity;
+
+        private decimal _unitPrice = 0;
+        private int _productQuantity = 0;
+        private int _clientId = 0;
 
         public OrderBuilder With(WellKnownOrder wellKnownOrder)
         {
@@ -17,9 +24,30 @@ namespace Antonio.TechTest.UnitTests.Builders
             return this;
         }
 
+        public OrderBuilder WithClientId(int id)
+        {
+            _clientId = id;
+            _withClientId = true;
+            return this;
+        }
+
         public OrderBuilder IgnoreId()
         {
             _ignoreId = true;
+            return this;
+        }
+
+        public OrderBuilder WithUnitPrice(decimal price)
+        {
+            _unitPrice = price;
+            _withUnitPrice = true;
+            return this;
+        }
+
+        public OrderBuilder WithQuantity(int quantity)
+        {
+            _productQuantity = quantity;
+            _withProductQuantity = true;
             return this;
         }
 
@@ -37,6 +65,15 @@ namespace Antonio.TechTest.UnitTests.Builders
 
             if (_ignoreId)
                 order.Id = _wellKnownOrder.Id;
+
+            if (_withClientId)
+                order.ClientId = _clientId;
+
+            if (_withProductQuantity)
+                order.Quantity = _productQuantity;
+
+            if (_withUnitPrice)
+                order.UnitPrice = _unitPrice;
 
             return order;
         }
