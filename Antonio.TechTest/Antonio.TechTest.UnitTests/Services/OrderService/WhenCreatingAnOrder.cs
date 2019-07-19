@@ -62,7 +62,7 @@ namespace Antonio.TechTest.UnitTests.Services
             this.AssumeExpensiveOrdersCreatedOnDatabaseForClient(order.ClientId, 200, 2);
 
             var exception = Assert.ThrowsException<Exception>(() => { _orderService.CreateOrder(order); });
-            Assert.AreEqual(expectedErrorMessage, exception.Message);            
+            Assert.AreEqual(expectedErrorMessage, exception.Message);
         }
 
         [TestMethod]
