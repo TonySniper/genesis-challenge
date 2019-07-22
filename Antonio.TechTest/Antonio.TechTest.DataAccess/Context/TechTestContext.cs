@@ -19,6 +19,25 @@ namespace Antonio.TechTest.DataAccess.Context
 
         public TechTestContext(DbContextOptions options) : base(options)
         {
+            this.Database.EnsureCreated();
         }
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            var order = new Order
+            {
+                CustomerId = 10,
+                DeliveryAddress = "Dummy Street 1",
+                Id = 15,
+                OrderStatus = OrderStatus.Completed,
+                ProductId = 25,
+                Quantity = 2,
+                UnitPrice = 10
+            };
+
+            modelBuilder.Entity<Order>().HasData(order);
+
+            base.OnModelCreating(modelBuilder);
+        }        
     }
 }

@@ -1,23 +1,16 @@
-﻿using System;
+﻿using Antonio.TechTest.Core.Entities;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace Antonio.TechTest.Core.Entities
+namespace Antonio.TechTest.Core.DTO
 {
-    public class Order
+    public class CreateOrderRequestDTO
     {
-        public int Id { get; set; }
         public int CustomerId { get; set; }
         public int ProductId { get; set; }
         public int Quantity { get; set; }
         public decimal UnitPrice { get; set; }
         public string DeliveryAddress { get; set; }
-        public OrderStatus OrderStatus { get; set; }
-    }
-
-    public enum OrderStatus
-    {
-        Pending = 1,
-        Completed = 2
     }
 }

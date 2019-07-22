@@ -26,7 +26,7 @@ namespace Antonio.TechTest.UnitTests.Services
         }
 
         [TestMethod]
-        public void ItShouldBeCreatedOnTheDatabase()
+        public void ItShouldBeCreated()
         {
             var newOrder = new StandardOrder();
 
@@ -43,7 +43,31 @@ namespace Antonio.TechTest.UnitTests.Services
             Assert.AreEqual(order.ProductId, orderOnDatabase.ProductId);
             Assert.AreEqual(order.Quantity, orderOnDatabase.Quantity);
             Assert.AreEqual(order.UnitPrice, orderOnDatabase.UnitPrice);
-            Assert.AreEqual(order.ClientId, orderOnDatabase.ClientId);
+            Assert.AreEqual(order.CustomerId, orderOnDatabase.CustomerId);
+            Assert.AreEqual(order.DeliveryAddress, orderOnDatabase.DeliveryAddress);
+        }
+
+        [TestMethod]
+        public void GivenAUserHasCompletedOrdersExceedingTheValueOfOneHundredEuroItShouldNotBeRefused()
+        {
+            var newOrder = new StandardOrder();
+
+            var order = new OrderBuilder()
+                .With(newOrder)
+                .Build();
+
+            AssumeOrdersCreatedWithCompletedStatusExceeds100EuroForClient(order.CustomerId);
+
+            _orderService.CreateOrder(order);
+
+            var orderOnDatabase = _context.Orders.AsNoTracking().FirstOrDefault(x => x.Id == order.Id);
+
+            Assert.IsNotNull(orderOnDatabase);
+            Assert.AreEqual(order.OrderStatus, orderOnDatabase.OrderStatus);
+            Assert.AreEqual(order.ProductId, orderOnDatabase.ProductId);
+            Assert.AreEqual(order.Quantity, orderOnDatabase.Quantity);
+            Assert.AreEqual(order.UnitPrice, orderOnDatabase.UnitPrice);
+            Assert.AreEqual(order.CustomerId, orderOnDatabase.CustomerId);
             Assert.AreEqual(order.DeliveryAddress, orderOnDatabase.DeliveryAddress);
         }
 
@@ -57,9 +81,9 @@ namespace Antonio.TechTest.UnitTests.Services
                 .IgnoreId()
                 .Build();
 
-            string expectedErrorMessage = $"Could not create the order because Client with id {order.ClientId} has outstanding orders with a total value in excess of onde hundred Euro";
+            string expectedErrorMessage = $"Order was rejected because customer with id {order.CustomerId} has outstanding orders with a total value in excess of one hundred Euro";
 
-            this.AssumeExpensiveOrdersCreatedOnDatabaseForClient(order.ClientId, 200, 2);
+            this.AssumeOrdersCreatedWithUnitPriceAndQuantityForClient(5, order.CustomerId, 25, 2);
 
             var exception = Assert.ThrowsException<Exception>(() => { _orderService.CreateOrder(order); });
             Assert.AreEqual(expectedErrorMessage, exception.Message);
@@ -92,11 +116,32 @@ namespace Antonio.TechTest.UnitTests.Services
             }
         }
 
-        private void AssumeExpensiveOrdersCreatedOnDatabaseForClient(int clientId, decimal unitPrice, int quantity)
+        private void AssumeOrdersCreatedWithCompletedStatusExceeds100EuroForClient(int clientId)
         {
             var newExpensiveOrder = new StandardOrder();
 
             for (int i = 0; i < 5; i++)
+            {
+                var order = new OrderBuilder()
+                    .With(newExpensiveOrder)
+                    .WithClientId(clientId)
+                    .WithQuantity(5)
+                    .WithUnitPrice(25)
+                    .WithOrderStatus(OrderStatus.Completed)
+                    .IgnoreId()
+                    .Build();
+
+                _context.Orders.Add(order);
+            }
+
+            _context.SaveChanges();
+        }
+
+        private void AssumeOrdersCreatedWithUnitPriceAndQuantityForClient(int numberOfOrders, int clientId, decimal unitPrice, int quantity)
+        {
+            var newExpensiveOrder = new StandardOrder();
+
+            for (int i = 0; i < numberOfOrders; i++)
             {
                 var order = new OrderBuilder()
                     .With(newExpensiveOrder)
