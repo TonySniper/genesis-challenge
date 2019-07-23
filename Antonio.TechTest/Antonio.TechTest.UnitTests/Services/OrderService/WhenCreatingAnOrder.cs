@@ -118,10 +118,28 @@ namespace Antonio.TechTest.UnitTests.Services
 
             string expectedErrorMessage = $"Product ID is required";
 
-
             var exception = Assert.ThrowsException<Exception>(() => { _orderService.CreateOrder(order); });
             Assert.AreEqual(expectedErrorMessage, exception.Message);
         }
+
+        [TestMethod]
+        public void GivenAnOrderHasEmptyOrInvalidRequiredFieldsItShouldThrowAnException()
+        {
+            var newOrder = new StandardOrder();
+
+            var order = new OrderBuilder()
+                .With(newOrder)
+                .WithProductId(0)
+                .WithClientId(0)
+                .WithQuantity(0)
+                .WithUnitPrice(0)
+                .Build();
+
+            order.DeliveryAddress = null;
+
+            Assert.ThrowsException<Exception>(() => { _orderService.CreateOrder(order); });
+        }
+
 
         [TestCleanup]
         public void CleanUp()
