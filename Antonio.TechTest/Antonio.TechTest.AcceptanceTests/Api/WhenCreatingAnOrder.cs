@@ -17,10 +17,13 @@ namespace Antonio.TechTest.AcceptanceTests.Api
         [TestMethod]
         public void ItShouldBeCreatedOnTheApi()
         {
+            int customerId = new Random(DateTime.Now.Millisecond).Next(15000, 35000);
+
             var newOrder = new StandardOrder();
 
             var dto = new OrderBuilder()
                 .With(newOrder)
+                .WithCustomerId(customerId)
                 .BuildDTO();
 
             var jsonContent = base.CreateJsonContentFor<CreateOrderRequestDTO>(dto);
@@ -45,6 +48,7 @@ namespace Antonio.TechTest.AcceptanceTests.Api
 
             var dto = new OrderBuilder()
                 .With(newOrder)
+                .WithCustomerId(new Random(DateTime.Now.Millisecond).Next(15000, 35000))
                 .WithQuantity(11)
                 .BuildDTO();
 
@@ -65,6 +69,7 @@ namespace Antonio.TechTest.AcceptanceTests.Api
 
             var dto = new OrderBuilder()
                 .With(newOrder)
+                .WithCustomerId(new Random(DateTime.Now.Millisecond).Next(15000, 35000))
                 .BuildDTO();
 
             string expectedErrorMessage = $"Order was rejected because customer with id {dto.CustomerId} has outstanding orders with a total value in excess of one hundred Euro";
