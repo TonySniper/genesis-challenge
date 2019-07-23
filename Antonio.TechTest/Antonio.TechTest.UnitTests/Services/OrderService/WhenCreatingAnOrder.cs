@@ -32,14 +32,12 @@ namespace Antonio.TechTest.UnitTests.Services
 
             var order = new OrderBuilder()
                 .With(newOrder)
-                .Build();
+                .BuildDTO();
 
-            _orderService.CreateOrder(order);
-
-            var orderOnDatabase = _context.Orders.AsNoTracking().FirstOrDefault(x => x.Id == order.Id);
+            var orderOnDatabase = _orderService.CreateOrder(order);
 
             Assert.IsNotNull(orderOnDatabase);
-            Assert.AreEqual(order.OrderStatus, orderOnDatabase.OrderStatus);
+            Assert.AreEqual(OrderStatus.Pending, orderOnDatabase.OrderStatus);
             Assert.AreEqual(order.ProductId, orderOnDatabase.ProductId);
             Assert.AreEqual(order.Quantity, orderOnDatabase.Quantity);
             Assert.AreEqual(order.UnitPrice, orderOnDatabase.UnitPrice);
@@ -48,22 +46,20 @@ namespace Antonio.TechTest.UnitTests.Services
         }
 
         [TestMethod]
-        public void GivenAUserHasCompletedOrdersExceedingTheValueOfOneHundredEuroItShouldNotBeRefused()
+        public void GivenAUserHasCompletedOrdersExceedingTheValueOfOneHundredEuroItShouldNotBeRejected()
         {
             var newOrder = new StandardOrder();
 
             var order = new OrderBuilder()
                 .With(newOrder)
-                .Build();
+                .BuildDTO();
 
             AssumeOrdersCreatedWithCompletedStatusExceeds100EuroForClient(order.CustomerId);
 
-            _orderService.CreateOrder(order);
-
-            var orderOnDatabase = _context.Orders.AsNoTracking().FirstOrDefault(x => x.Id == order.Id);
+            var orderOnDatabase = _orderService.CreateOrder(order);
 
             Assert.IsNotNull(orderOnDatabase);
-            Assert.AreEqual(order.OrderStatus, orderOnDatabase.OrderStatus);
+            Assert.AreEqual(OrderStatus.Pending, orderOnDatabase.OrderStatus);
             Assert.AreEqual(order.ProductId, orderOnDatabase.ProductId);
             Assert.AreEqual(order.Quantity, orderOnDatabase.Quantity);
             Assert.AreEqual(order.UnitPrice, orderOnDatabase.UnitPrice);
@@ -72,14 +68,14 @@ namespace Antonio.TechTest.UnitTests.Services
         }
 
         [TestMethod]
-        public void GivenAClientWithOutstandingOrdersExceeding1000EuroItShouldBeRejected()
+        public void GivenAClientWithOutstandingOrdersExceeding100EuroItShouldBeRejected()
         {
             var newOrder = new StandardOrder();
 
             var order = new OrderBuilder()
                 .With(newOrder)
                 .IgnoreId()
-                .Build();
+                .BuildDTO();
 
             string expectedErrorMessage = $"Order was rejected because customer with id {order.CustomerId} has outstanding orders with a total value in excess of one hundred Euro";
 
@@ -97,7 +93,7 @@ namespace Antonio.TechTest.UnitTests.Services
             var order = new OrderBuilder()
                 .With(newOrder)
                 .WithQuantity(11)
-                .Build();
+                .BuildDTO();
 
             string expectedErrorMessage = $"Order was rejected because it contains more than 10 units of product { order.ProductId }";
 
@@ -114,7 +110,7 @@ namespace Antonio.TechTest.UnitTests.Services
             var order = new OrderBuilder()
                 .With(newOrder)
                 .WithProductId(0)   
-                .Build();
+                .BuildDTO();
 
             string expectedErrorMessage = $"Product ID is required";
 
@@ -130,10 +126,10 @@ namespace Antonio.TechTest.UnitTests.Services
             var order = new OrderBuilder()
                 .With(newOrder)
                 .WithProductId(0)
-                .WithClientId(0)
+                .WithCustomerId(0)
                 .WithQuantity(0)
                 .WithUnitPrice(0)
-                .Build();
+                .BuildDTO();
 
             order.DeliveryAddress = null;
 
@@ -159,12 +155,12 @@ namespace Antonio.TechTest.UnitTests.Services
             {
                 var order = new OrderBuilder()
                     .With(newExpensiveOrder)
-                    .WithClientId(clientId)
+                    .WithCustomerId(clientId)
                     .WithQuantity(5)
                     .WithUnitPrice(25)
                     .WithOrderStatus(OrderStatus.Completed)
                     .IgnoreId()
-                    .Build();
+                    .BuildEntity();
 
                 _context.Orders.Add(order);
             }
@@ -180,11 +176,11 @@ namespace Antonio.TechTest.UnitTests.Services
             {
                 var order = new OrderBuilder()
                     .With(newExpensiveOrder)
-                    .WithClientId(clientId)
+                    .WithCustomerId(clientId)
                     .WithQuantity(quantity)
                     .WithUnitPrice(unitPrice)
                     .IgnoreId()
-                    .Build();
+                    .BuildEntity();
 
                 _context.Orders.Add(order);
             }

@@ -28,7 +28,7 @@ namespace Antonio.TechTest.UnitTests.Services
 
             var order = new OrderBuilder()
                 .With(existingOrder)
-                .Build();
+                .BuildEntity();
 
             AssumeOrderExists(order);
 
@@ -56,9 +56,9 @@ namespace Antonio.TechTest.UnitTests.Services
 
             var order = new OrderBuilder()
             .With(existingOrder)
-            .WithClientId(clientId)
+            .WithCustomerId(clientId)
             .WithProductId(productId)
-            .Build();
+            .BuildEntity();
 
             AssumeOrderExists(order);
 

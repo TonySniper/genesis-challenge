@@ -1,4 +1,5 @@
-﻿using Antonio.TechTest.Core.DTO;
+﻿using Antonio.TechTest.Application.Mapping;
+using Antonio.TechTest.Core.DTO;
 using Antonio.TechTest.Core.Entities;
 using Antonio.TechTest.DataAccess.Context;
 using System;
@@ -17,14 +18,18 @@ namespace Antonio.TechTest.Application.Services
             _context = context;
         }
 
-        public void CreateOrder(Order order)
+        public Order CreateOrder(CreateOrderRequestDTO orderDto)
         {
+            var order = OrderMap.Map(orderDto);
+
             this.ValidateOrder(order);
 
             order.OrderStatus = OrderStatus.Pending;
 
             _context.Add(order);
             _context.SaveChanges();
+
+            return order;
         }
         
         public IEnumerable<OrderQueryResponseDTO> GetOrderByQuery(OrderQueryRequestDTO dto)

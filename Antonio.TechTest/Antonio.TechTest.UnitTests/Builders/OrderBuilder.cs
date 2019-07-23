@@ -1,4 +1,5 @@
-﻿using Antonio.TechTest.Core.Entities;
+﻿using Antonio.TechTest.Core.DTO;
+using Antonio.TechTest.Core.Entities;
 using Antonio.TechTest.UnitTests.Personas;
 using System;
 using System.Collections.Generic;
@@ -15,6 +16,7 @@ namespace Antonio.TechTest.UnitTests.Builders
         private bool _withUnitPrice;
         private bool _withProductQuantity;
         private bool _withOrderStatus;
+        private bool _withEmptyObject;
 
         private decimal _unitPrice = 0;
         private int _productQuantity = 0;
@@ -28,10 +30,16 @@ namespace Antonio.TechTest.UnitTests.Builders
             return this;
         }
 
-        public OrderBuilder WithClientId(int id)
+        public OrderBuilder WithCustomerId(int id)
         {
             _clientId = id;
             _withClientId = true;
+            return this;
+        }
+
+        public OrderBuilder WithEmptyObject()
+        {
+            _withEmptyObject = true;
             return this;
         }
 
@@ -69,8 +77,11 @@ namespace Antonio.TechTest.UnitTests.Builders
             return this;
         }
 
-        public Order Build()
+        public Order BuildEntity()
         {
+            if (_withEmptyObject)
+                return new Order();
+
             var order = new Order
             {
                 CustomerId = _wellKnownOrder.ClientId,
@@ -95,6 +106,35 @@ namespace Antonio.TechTest.UnitTests.Builders
 
             if (_withOrderStatus)
                 order.OrderStatus = _orderStatus;
+
+            if (_withProductId)
+                order.ProductId = _productId;
+
+            return order;
+        }
+
+        public CreateOrderRequestDTO BuildDTO()
+        {
+            if (_withEmptyObject)
+                return new CreateOrderRequestDTO();
+
+            var order = new CreateOrderRequestDTO
+            {
+                CustomerId = _wellKnownOrder.ClientId,
+                DeliveryAddress = _wellKnownOrder.DeliveryAddress,
+                ProductId = _wellKnownOrder.ProductId,
+                Quantity = _wellKnownOrder.Quantity,
+                UnitPrice = _wellKnownOrder.UnitPrice
+            };
+
+            if (_withClientId)
+                order.CustomerId = _clientId;
+
+            if (_withProductQuantity)
+                order.Quantity = _productQuantity;
+
+            if (_withUnitPrice)
+                order.UnitPrice = _unitPrice;
 
             if (_withProductId)
                 order.ProductId = _productId;

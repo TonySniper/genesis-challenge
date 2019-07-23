@@ -1,0 +1,23 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp2.2</TargetFramework>
+
+    <IsPackable>false</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.2.0" />
+    <PackageReference Include="MSTest.TestAdapter" Version="1.4.0" />
+    <PackageReference Include="MSTest.TestFramework" Version="1.4.0" />
+    <PackageReference Include="Newtonsoft.Json" Version="12.0.2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Antonio.TechTest.Application\Antonio.TechTest.Application.csproj" />
+    <ProjectReference Include="..\Antonio.TechTest.Core\Antonio.TechTest.Core.csproj" />
+    <ProjectReference Include="..\Antonio.TechTest.DataAccess\Antonio.TechTest.DataAccess.csproj" />
+    <ProjectReference Include="..\Antonio.TechTest.UnitTests\Antonio.TechTest.UnitTests.csproj" />
+  </ItemGroup>
+
+</Project>

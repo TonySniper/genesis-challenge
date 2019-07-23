@@ -57,12 +57,12 @@ namespace Antonio.TechTest.Api.Controllers
 
         // POST api/values
         [HttpPost]
-        public IActionResult Post([FromBody]Order value)
+        public IActionResult Post([FromBody]CreateOrderRequestDTO value)
         {
             try
             {
-                _orderService.CreateOrder(value);
-                return Ok("Order created with success");
+                var order = _orderService.CreateOrder(value);
+                return Ok(order);
             }
             catch (Exception ex)
             {

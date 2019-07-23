@@ -8,7 +8,7 @@ namespace Antonio.TechTest.Application.Services
 {
     public interface IOrderService
     {
-        void CreateOrder(Order order);
+        Order CreateOrder(CreateOrderRequestDTO orderDto);
         IEnumerable<OrderQueryResponseDTO> GetAllOrders();
         IEnumerable<OrderQueryResponseDTO> GetOrderByQuery(OrderQueryRequestDTO dto);
     }
