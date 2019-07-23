@@ -1,5 +1,4 @@
-﻿using Antonio.TechTest.Application.Mapping;
-using Antonio.TechTest.Core.DTO;
+﻿using Antonio.TechTest.Core.DTO;
 using Antonio.TechTest.Core.Entities;
 using Antonio.TechTest.DataAccess.Context;
 using System;

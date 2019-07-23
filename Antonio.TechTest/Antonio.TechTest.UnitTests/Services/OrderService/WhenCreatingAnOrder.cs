@@ -106,6 +106,23 @@ namespace Antonio.TechTest.UnitTests.Services
             Assert.AreEqual(expectedErrorMessage, exception.Message);
         }
 
+        [TestMethod]
+        public void GivenAnOrderHasNoProductIdItShouldThrowAnException()
+        {
+            var newOrder = new StandardOrder();
+
+            var order = new OrderBuilder()
+                .With(newOrder)
+                .WithProductId(0)   
+                .Build();
+
+            string expectedErrorMessage = $"Product ID is required";
+
+
+            var exception = Assert.ThrowsException<Exception>(() => { _orderService.CreateOrder(order); });
+            Assert.AreEqual(expectedErrorMessage, exception.Message);
+        }
+
         [TestCleanup]
         public void CleanUp()
         {

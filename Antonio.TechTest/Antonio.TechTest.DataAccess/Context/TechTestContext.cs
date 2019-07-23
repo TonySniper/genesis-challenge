@@ -37,7 +37,17 @@ namespace Antonio.TechTest.DataAccess.Context
 
             modelBuilder.Entity<Order>().HasData(order);
 
+            this.ConfigureOrderMapping(modelBuilder);
+
             base.OnModelCreating(modelBuilder);
         }        
+
+        private void ConfigureOrderMapping(ModelBuilder builder)
+        {
+            builder.Entity<Order>().Property(x => x.ProductId).IsRequired();
+            builder.Entity<Order>().Property(x => x.UnitPrice).IsRequired();
+            builder.Entity<Order>().Property(x => x.Quantity).IsRequired();
+            builder.Entity<Order>().Property(x => x.DeliveryAddress).IsRequired();
+        }
     }
 }
